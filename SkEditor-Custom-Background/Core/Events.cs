@@ -1,7 +1,8 @@
 using Avalonia.Input;
 using SkEditor.API;
+using CustomBackgroundAddon.Settings;
 
-namespace CustomBackgroundAddon.Utilities;
+namespace CustomBackgroundAddon.Core;
 
 public static class Events
 {
@@ -38,15 +39,34 @@ public static class Events
 
     private static void OnMainWindowKeyDown(object? sender, KeyEventArgs args)
     {
-        
+
     }
 
     private static void OnAddonSettingChanged(object? sender, AddonSettingChangedEventArgs args)
     {
         if (args.Setting.Addon.Identifier != CustomBackgroundAddon.Instance.Identifier) return;
-     
-        SkEditorAPI.Logs.Info($"Reloading {CustomBackgroundAddon.Instance.Name} Addon due to setting changes...");
 
-        Background.Reload();
+        var key = args.Setting.Key;
+        var newValue = CustomBackgroundAddon.Instance.GetSetting(key);
+
+        if (newValue != null)
+        {
+            switch (key)
+            {
+                case "BackgroundBlur":
+                    Settings.SettingsManager.Instance.BackgroundBlur = (double)newValue;
+                    break;
+                case "BackgroundOpacity":
+                    Settings.SettingsManager.Instance.BackgroundOpacity = (double)newValue;
+                    break;
+                case "KeepEditorBackground":
+                    Settings.SettingsManager.Instance.KeepEditorBackground = (bool)newValue;
+                    break;
+            }
+
+            Settings.SettingsManager.Instance.Save();
+        }
+
+        Background.BackgroundManager.Reload();
     }
 }

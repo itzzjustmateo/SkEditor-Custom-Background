@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 using SkEditor.API.Settings;
 using SkEditor.API.Settings.Types;
 
-namespace CustomBackgroundAddon.Utilities.Settings;
+namespace CustomBackgroundAddon.Settings.Controls;
 
 public class InfoSetting : ISettingType
 {
@@ -20,12 +20,12 @@ public class InfoSetting : ISettingType
 
     public Control CreateControl(object value, Action<object> onChanged)
     {
-        return new Control();
+        return new Label { Content = "Value: " + value };
     }
 
     public void SetupExpander(SettingsExpander expander, Setting setting)
     {
     }
 
-    public bool IsSelfManaged => true;
+    public bool IsSelfManaged => false;
 }

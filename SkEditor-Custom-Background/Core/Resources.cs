@@ -1,6 +1,7 @@
 using System.Reflection;
+using CustomBackgroundAddon.Settings;
 
-namespace CustomBackgroundAddon.Utilities;
+namespace CustomBackgroundAddon.Core;
 
 public static class Resources
 {
@@ -10,7 +11,7 @@ public static class Resources
         using var stream = assembly.GetManifestResourceStream(resourceName);
         if (stream == null) throw new FileNotFoundException(resourceName);
 
-        using var fileStream = File.Create(outputPath);
+        using var fileStream = System.IO.File.Create(outputPath);
         stream.CopyTo(fileStream);
     }
 
@@ -31,13 +32,9 @@ public static class Resources
         foreach (var resourceName in embeddedResources)
         {
             var name = resourceName.Replace("CustomBackgroundAddon.Languages.", "").Replace(".xaml", "");
-            var outputPath = Path.Combine(Settings.Settings.AppDataFolderPath, "Languages", $"{name}.xaml");
-            Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
+            var outputPath = System.IO.Path.Combine(Settings.SettingsManager.AppDataFolderPath, "Languages", $"{name}.xaml");
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(outputPath)!);
             ExtractEmbededResource(resourceName, outputPath);
         }
     }
-    
-    
-
-    
 }

@@ -1,9 +1,10 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
+using CustomBackgroundAddon.Settings;
 
-namespace CustomBackgroundAddon.Utilities;
+namespace CustomBackgroundAddon.Core;
 
 public class Translation
 {
@@ -11,7 +12,7 @@ public class Translation
 
     public static string? Language;
 
-    public static string LanguagesFolder { get; } = Path.Combine(Settings.Settings.AppDataFolderPath, "Languages");
+    public static string LanguagesFolder { get; } = System.IO.Path.Combine(Settings.SettingsManager.AppDataFolderPath, "Languages");
 
     public static string Get(string key, params string?[] parameters)
     {
@@ -35,9 +36,9 @@ public class Translation
             Translations.Remove(translation.Key);
         }
 
-        Uri languageXaml = new(Path.Combine(LanguagesFolder, $"{language}.xaml"));
+        Uri languageXaml = new(System.IO.Path.Combine(LanguagesFolder, $"{language}.xaml"));
 
-        if (!File.Exists(languageXaml.OriginalString))
+        if (!System.IO.File.Exists(languageXaml.OriginalString))
         {
             await ChangeLanguage("English");
             return;

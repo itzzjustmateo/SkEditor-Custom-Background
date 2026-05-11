@@ -1,21 +1,18 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Layout;
 using FluentAvalonia.UI.Controls;
 using Newtonsoft.Json.Linq;
 using SkEditor.API.Settings.Types;
 using Timer = System.Timers.Timer;
 
-namespace CustomBackgroundAddon.Utilities.Settings;
+namespace CustomBackgroundAddon.Settings.Controls;
 
-/// <summary>
-///     Represent a slider setting.
-/// </summary>
 public class SliderSetting(
-    double min = 0.0, 
-    double max = 100.0, 
-    double tickFrequency = 1.0, 
-    bool showAlternativeInput = true, 
-    bool isSnapToTickEnabled = true, 
+    double min = 0.0,
+    double max = 100.0,
+    double tickFrequency = 1.0,
+    bool showAlternativeInput = true,
+    bool isSnapToTickEnabled = true,
     bool debounce = true
     ) : ISettingType
 {
@@ -138,7 +135,7 @@ public class SliderSetting(
         {
             var newValue = numberBox.Value;
 
-            if (Double.IsNaN(newValue))
+            if (double.IsNaN(newValue))
             {
                 numberBox.Value = slider.Value;
                 return;

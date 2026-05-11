@@ -1,13 +1,13 @@
-﻿using Avalonia.Media;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
-using CustomBackgroundAddon.Utilities.Image;
 using SkEditor.API;
 using SkEditor.Utilities.Styling;
+using CustomBackgroundAddon.Settings;
 
-namespace CustomBackgroundAddon.Utilities;
+namespace CustomBackgroundAddon.Background;
 
-public static class BackgroundImage
+public static class BackgroundImageRenderer
 {
     private static IBrush? _originalBackground;
     private static Bitmap? _currentBitmap;
@@ -21,8 +21,8 @@ public static class BackgroundImage
             return;
         }
 
-        var filePath = Path.Combine(Settings.Settings.Instance.CurrentBackgroundPath);
-        if (!File.Exists(filePath))
+        var filePath = System.IO.Path.Combine(Settings.SettingsManager.Instance.CurrentBackgroundPath);
+        if (!System.IO.File.Exists(filePath))
         {
             SkEditorAPI.Logs.Warning("File not found: " + filePath);
             return;
@@ -32,8 +32,8 @@ public static class BackgroundImage
 
         _ = Dispatcher.UIThread.InvokeAsync(() =>
         {
-            var backgroundBlur = (float)Settings.Settings.Instance.BackgroundBlur;
-            
+            var backgroundBlur = (float)Settings.SettingsManager.Instance.BackgroundBlur;
+
             var blurredBitmap = Blur.ApplyBlur(filePath, backgroundBlur);
             if (blurredBitmap == null)
             {
@@ -46,8 +46,8 @@ public static class BackgroundImage
 
             mainWindow.Background = new ImageBrush(blurredBitmap)
             {
-                Stretch = Stretch.UniformToFill, 
-                AlignmentX = AlignmentX.Center, 
+                Stretch = Stretch.UniformToFill,
+                AlignmentX = AlignmentX.Center,
                 AlignmentY = AlignmentY.Center,
             };
         });
@@ -61,7 +61,7 @@ public static class BackgroundImage
         {
             mainWindow.Background = ThemeEditor.CurrentTheme.BackgroundColor;
         });
-        
+
         _currentBitmap?.Dispose();
         _currentBitmap = null;
         _originalBackground = null;
@@ -69,12 +69,12 @@ public static class BackgroundImage
 
     public static bool Enabled()
     {
-        return Settings.Settings.Instance.CurrentBackgroundPath != "";
+        return Settings.SettingsManager.Instance.CurrentBackgroundPath != "";
     }
 
     public static void Setup()
     {
-        var directoryExists = Directory.Exists(Settings.Settings.BackgroundFolderPath);
-        if (!directoryExists) Directory.CreateDirectory(Settings.Settings.BackgroundFolderPath);
+        var directoryExists = System.IO.Directory.Exists(Settings.SettingsManager.BackgroundFolderPath);
+        if (!directoryExists) System.IO.Directory.CreateDirectory(Settings.SettingsManager.BackgroundFolderPath);
     }
 }

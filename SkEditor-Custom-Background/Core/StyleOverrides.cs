@@ -1,9 +1,8 @@
-﻿using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace CustomBackgroundAddon.Utilities;
+namespace CustomBackgroundAddon.Core;
 
 public class StyleOverrides
 {
@@ -29,16 +28,16 @@ public class StyleOverrides
 
         if (AvaloniaXamlLoader.Load(new Uri($"avares://{CustomBackgroundAddon.Instance.Identifier}/styles/{fileName}.axaml"))
             is not ResourceDictionary styleOverrideResources) return;
-        
+
         _originalResources[fileName] = new Dictionary<object, object?>();
-            
+
         foreach (var key in styleOverrideResources.Keys)
         {
             if (Application.Current.Resources.TryGetResource(key, null, out var originalValue))
             {
                 _originalResources[fileName]![key] = originalValue;
             }
-            
+
             Application.Current.Resources[key] = styleOverrideResources[key];
         }
     }
@@ -46,19 +45,19 @@ public class StyleOverrides
     public static void Apply(object key, object value)
     {
         if (Application.Current == null) return;
-        
+
         Application.Current.Resources[key] = value;
     }
-    
+
     public static void RemoveAll()
     {
         if (Application.Current == null) return;
-        
+
         foreach (var fileName in _originalResources.Keys.ToList())
         {
             RemoveFile(fileName);
         }
-        
+
         foreach (var key in _originalManualResources.Keys.ToList())
         {
             Remove(key);
@@ -68,7 +67,7 @@ public class StyleOverrides
     public static void RemoveFile(string fileName)
     {
         if (Application.Current == null) return;
-        
+
         if (!_originalResources.TryGetValue(fileName, out var originalResources) || originalResources == null) return;
 
         foreach (var (key, originalValue) in originalResources)
@@ -80,14 +79,14 @@ public class StyleOverrides
                 Application.Current.Resources.Add(key, originalValue);
             }
         }
-    
+
         _originalResources[fileName] = null;
     }
-    
+
     public static void Remove(object key)
     {
         if (Application.Current == null) return;
-        
+
         if (!_originalManualResources.TryGetValue(key, out var originalValue)) return;
 
         if (originalValue != null)
@@ -98,7 +97,7 @@ public class StyleOverrides
         {
             Application.Current.Resources.Remove(key);
         }
-        
+
         _originalManualResources.Remove(key);
     }
 }

@@ -1,17 +1,17 @@
 ﻿using System.Reflection;
-using CustomBackgroundAddon.Utilities;
 using Avalonia.Platform;
 using Avalonia.Svg.Skia;
 using FluentAvalonia.UI.Controls;
-using CustomBackgroundAddon.Utilities.Settings;
 using FluentIcons.Avalonia.Fluent;
 using FluentIcons.Common;
+using SkEditor.API;
 using SkEditor.API.Settings;
 using SkEditor.API.Settings.Types;
+using CustomBackgroundAddon.Core;
+using CustomBackgroundAddon.Settings;
+using CustomBackgroundAddon.Settings.Controls;
 
 namespace CustomBackgroundAddon;
-
-using SkEditor.API;
 
 public class CustomBackgroundAddon : IAddon
 {
@@ -33,10 +33,10 @@ public class CustomBackgroundAddon : IAddon
 
     public IconSource GetAddonIcon()
     {
-        if (this._iconSource != null) return this._iconSource;
+        if (_iconSource != null) return _iconSource;
 
         var stream = AssetLoader.Open(new Uri("avares://de.max54nj.customBackground/Assets/Icon.svg"));
-        return this._iconSource =
+        return _iconSource =
                    new ImageIconSource { Source = new SvgImage { Source = SvgSource.LoadFromStream(stream) } };
     }
 
@@ -50,17 +50,17 @@ public class CustomBackgroundAddon : IAddon
 
         Instance = this;
 
-        Settings.Load();
-        
-        Utilities.Events.Register();
+        SettingsManager.Load();
+
+        Events.Register();
 
         Resources.ExtractLanguages();
 
         await Translation.ChangeLanguage(SkEditorAPI.Core.GetAppConfig().Language);
 
         StyleOverrides.Init();
-        Background.Setup();
-        Background.Register();
+        Background.BackgroundManager.Setup();
+        Background.BackgroundManager.Register();
 
         SkEditorAPI.Logs.Info($"Successfully enabled {Name} Addon!");
     }
@@ -68,10 +68,10 @@ public class CustomBackgroundAddon : IAddon
     public void OnDisable()
     {
         SkEditorAPI.Logs.Info($"Disabling {Name} Addon...");
-        
-        Background.Unregister();
 
-        Utilities.Events.Unregister();
+        Background.BackgroundManager.Unregister();
+
+        Events.Unregister();
 
         SkEditorAPI.Logs.Info($"Successfully disabled {Name} Addon!");
     }
@@ -80,30 +80,30 @@ public class CustomBackgroundAddon : IAddon
     {
         List<Setting> settings =
         [
-            new(Instance, 
-                Translation.Get("SettingsBackgroundImageLabel"), 
+            new(Instance,
+                Translation.Get("SettingsBackgroundImageLabel"),
                 "BackgroundImage",
-                null!, 
-                new FileSelectSetting(), 
+                null!,
+                new FileSelectSetting(),
                 Translation.Get("SettingsBackgroundImageDescription"),
                 new FluentIconSource { Icon = Icon.Image }),
-            
-            new(Instance, 
-                Translation.Get("SettingsKeepEditorBackgroundLabel"), 
+
+            new(Instance,
+                Translation.Get("SettingsKeepEditorBackgroundLabel"),
                 "KeepEditorBackground",
-                false, 
+                false,
                 new ToggleSetting(),
                 Translation.Get("SettingsKeepEditorBackgroundDescription"),
                 new FluentIconSource { Icon = Icon.ColorBackground }),
-            
-            new(Instance, 
-                Translation.Get("SettingsBackgroundOpacityLabel"), 
-                "BackgroundOpacity", 
-                5, 
-                new SliderSetting(0.0, 100.0, 1.0, true, true), 
-                Translation.Get("SettingsBackgroundOpacityDescription"), 
+
+            new(Instance,
+                Translation.Get("SettingsBackgroundOpacityLabel"),
+                "BackgroundOpacity",
+                5,
+                new SliderSetting(0.0, 100.0, 1.0, true, true),
+                Translation.Get("SettingsBackgroundOpacityDescription"),
                 new FluentIconSource() { Icon = Icon.TransparencySquare}),
-            
+
             new(Instance,
                 Translation.Get("SettingsBackgroundBlurLabel"),
                 "BackgroundBlur",
